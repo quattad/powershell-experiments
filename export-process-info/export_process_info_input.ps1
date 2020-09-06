@@ -19,9 +19,23 @@ Minimum number of handles required
 # Export-Csv -Path result_input.csv -NoTypeInformation
 
 # Export processes by prompting for user input via parameter
+
+# ValueFromPipeline allows parameters to be passed in via pipeline 
+# For example, the following creates a report for processes with >= 4000 handles
+# "4000" | ./export_process_input
+
+# Alias allows parameters to be recognized by altnerative names
+
+# Write-Verbose will only output if script is run with -verbose parameter
+
+[cmdletbinding()]
 Param(
-    [Parameter(Mandatory=$true)][string]$handle_input
+    [Parameter(ValueFromPipeline=$true, Mandatory=$true)][Alias("Handles")][string]$handle_input
 )
+
+# Use Write-Verbose to add terminal logs during code execution
+Write-Verbose "Generating report..."
+
 Get-Process | `
 Select-Object Name, Id, @{name='CPU'; expression={$_.TotalProcessorTime}}, Handles | `
 Where-Object Handles -ge $handle_input | `
@@ -29,5 +43,7 @@ Sort-Object -property Handles | `
 Select-Object Name, Id, CPU, Handles | `
 Export-Csv -Path result_input.csv -NoTypeInformation
 
+Write-Verbose "Saving and opening CSV file..."
+
 # Open csv
-Start result_input.csv
+Start-Process result_input.csv

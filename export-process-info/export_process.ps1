@@ -5,10 +5,10 @@
 # 2) Handles > 100, organized in ascending order
 ###
 
-# Works
+# Export process
 Get-Process | `
 Select-Object Name, Id, @{name='CPU'; expression={$_.TotalProcessorTime}}, Handles | `
-Where Handles -ge 1000 | `
+Where-Object Handles -ge 1000 | `
 Sort-Object -property Handles | `
 Select-Object Name, Id, CPU, Handles | `
 Export-Csv -Path result.csv -Append -NoTypeInformation
